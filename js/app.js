@@ -58,14 +58,22 @@ var allEnemiesMaker = function (n) {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
-    GameObject.call(this, 'images/char-boy.png', 205, 380, 2);
+    GameObject.call(this, 'images/char-boy.png', 202, 380, 2);
 }
 Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
 
-/*Player.prototype.handleInput() = function () {
-
-}*/
+Player.prototype.handleInput = function (key) {
+  if (key == 'left' && (this.position.x - 101) >= 0) {
+      this.position.x -= 101;
+  } else if (key == 'up' && (this.position.y - 83) >= -35) {
+      this.position.y -= 83;
+  } else if (key == 'right' && (this.position.x + 101) < 505) {
+      this.position.x += 101;
+  } else if (key == 'down' && (this.position.y + 83) < 463) {
+    this.position.y += 83;
+  }
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
