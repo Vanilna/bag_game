@@ -25,7 +25,7 @@ GameObject.prototype.render = function () {
 };
 
 GameObject.prototype.randomY = function () {
-    var yPositions = [59, 143, 227];
+    var yPositions = [62, 145, 228];
     var random = this.random(0,2);
     return yPositions[random];
 }
@@ -54,25 +54,40 @@ var allEnemiesMaker = function (n) {
     return enemyArray;
 };
 
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
-    GameObject.call(this, 'images/char-boy.png', 202, 380, 2);
+    GameObject.call(this, 'images/char-boy.png', 202, 394, 2);
 }
 Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.handleInput = function (key) {
-  if (key == 'left' && (this.position.x - 101) >= 0) {
+  if (key == 'left' && !(this.position.x == 0)) {
       this.position.x -= 101;
-  } else if (key == 'up' && (this.position.y - 83) >= -35) {
+  } else if (key == 'up' && !(this.position.y == -21)) {
       this.position.y -= 83;
-  } else if (key == 'right' && (this.position.x + 101) < 505) {
+  } else if (key == 'right' && !(this.position.x == 404)) {
       this.position.x += 101;
-  } else if (key == 'down' && (this.position.y + 83) < 463) {
+  } else if (key == 'down' && !(this.position.y == 394)) {
     this.position.y += 83;
   }
+}
+
+Player.prototype.checkCollisions = function() {
+    
+    allEnemies.forEach(function (enemy) {
+        if (enemy.position.x >= player.position.x && enemy.position.x <= (player.position.x + 101) && 
+            enemy.position.y >= player.position.x && enemy.position.x <= (player.position.x + 101)) {
+            //main();
+        }
+    });
+
+    if (this.position.y == -35) {
+        //main();
+    }
 }
 
 // Now instantiate your objects.
