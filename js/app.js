@@ -77,16 +77,16 @@ Player.prototype.handleInput = function (key) {
 }
 
 Player.prototype.checkCollisions = function() {
-    
+
     allEnemies.forEach(function (enemy) {
-        if (enemy.position.x >= player.position.x && enemy.position.x <= (player.position.x + 101) && 
-            enemy.position.y >= player.position.x && enemy.position.x <= (player.position.x + 101)) {
-            //main();
+        if ((enemy.position.x > (player.position.x - 80) && enemy.position.x < (player.position.x + 80)) 
+            && enemy.position.y == player.position.y) {
+            allert('yes');
         }
     });
 
-    if (this.position.y == -35) {
-        //main();
+    if (this.position.y == -21) {
+        allert('yes');
     }
 }
 
