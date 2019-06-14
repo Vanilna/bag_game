@@ -1,7 +1,7 @@
 // Enemies our player must avoid
 var GameObject = function (image, x, y, speed) {
     this.sprite = image;
-    this.position = { x: x, y: y };
+    this.position = { x: parseInt(x, 10), y: parseInt(y, 10) };
     this.speed = speed;
 }
 
@@ -9,7 +9,14 @@ GameObject.prototype.update = function (dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
-    this.position.x += (this.speed * dt);
+    if (this.position.x <= 505) {
+        this.position.x += (this.speed * dt);
+    } else {
+        this.position.x = this.random(-200,-101);
+        this.position.y = this.randomY();
+    }
+
+    
 };
 
 // Draw the enemy on the screen, required method for game
@@ -18,22 +25,24 @@ GameObject.prototype.render = function () {
 };
 
 GameObject.prototype.randomY = function () {
-    var yPositions = [124, 207, 290];
+    var yPositions = [59, 143, 227];
     var random = this.random(0,2);
     return yPositions[random];
 }
 
+GameObject.prototype.random = function (min, max) {
+    var random = Math.floor(Math.random() * (max - min + 1)) + min;
+    return random;
+}
+
 var Enemy = function () {
-    GameObject.call(this, 'images/enemy-bug.png', 0, this.randomY(), this.random(1,3));
+    GameObject.call(this, 'images/enemy-bug.png', this.random(-100,0), this.randomY(), this.random(200,500));
 };
 
 Enemy.prototype = Object.create(GameObject.prototype);
 Enemy.prototype.constructor = Enemy;
 
-Enemy.prototype.random = function (min, max) {
-    var random = Math.floor(Math.random() * (max - min + 1)) + min;
-    return random;
-}
+
 
 var allEnemiesMaker = function (n) {
     var enemy,
@@ -49,7 +58,7 @@ var allEnemiesMaker = function (n) {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
-    GameObject.call(this, 'images/char-cat-girl.png', 202, 41, 2);
+    GameObject.call(this, 'images/char-boy.png', 205, 380, 2);
 }
 Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
@@ -62,7 +71,7 @@ Player.prototype.constructor = Player;
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = allEnemiesMaker(3);
-
+var player = new Player();
 
 
 // This listens for key presses and sends the keys to your
