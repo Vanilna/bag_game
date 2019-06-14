@@ -1,18 +1,11 @@
 // Enemies our player must avoid
-var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
+var GameObject = function (image, x, y, speed) {
+    this.sprite = image;
+    this.position = { x: x, y: y };
+    this.speed = speed;
+}
 
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-    this.position = { x : 0, y : this.randomY()};
-    this.speed = this.randomFromThree();
-};
-
-// Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
+GameObject.prototype.update = function (dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
@@ -20,46 +13,61 @@ Enemy.prototype.update = function(dt) {
 };
 
 // Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
+GameObject.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.position.x, this.position.y);
 };
 
-Enemy.prototype.randomFromThree = function() {
-   var random = Math.floor(Math.random() + (3 - 1 + 1)) + 1;
-   return random;
+GameObject.prototype.randomY = function () {
+    var yPositions = [124, 207, 290];
+    var random = this.random(0,2);
+    return yPositions[random];
 }
 
-Enemy.prototype.randomY = function() {
-   var yPositions = [ 124, 207, 290];
-   var random = this.randomFromThree();
-   return yPositions[random - 1];
+var Enemy = function () {
+    GameObject.call(this, 'images/enemy-bug.png', 0, this.randomY(), this.random(1,3));
+};
+
+Enemy.prototype = Object.create(GameObject.prototype);
+Enemy.prototype.constructor = Enemy;
+
+Enemy.prototype.random = function (min, max) {
+    var random = Math.floor(Math.random() * (max - min + 1)) + min;
+    return random;
 }
 
-var allEnemiesArray = function () {
+var allEnemiesMaker = function (n) {
     var enemy,
-    enemyArray = [];
-    for ( i = 0; i < 3; i++) {
+        enemyArray = [];
+    for (i = 0; i < n; i++) {
         enemy = new Enemy;
         enemyArray.push(enemy);
     }
-    console.log(enemyArray);
     return enemyArray;
 };
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function () {
+    GameObject.call(this, 'images/char-cat-girl.png', 202, 41, 2);
+}
+Player.prototype = Object.create(GameObject.prototype);
+Player.prototype.constructor = Player;
 
+/*Player.prototype.handleInput() = function () {
+
+}*/
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+var allEnemies = allEnemiesMaker(3);
 
 
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
-document.addEventListener('keyup', function(e) {
+document.addEventListener('keyup', function (e) {
     var allowedKeys = {
         37: 'left',
         38: 'up',
