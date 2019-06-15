@@ -12,11 +12,11 @@ GameObject.prototype.update = function (dt) {
     if (this.position.x <= 505) {
         this.position.x += (this.speed * dt);
     } else {
-        this.position.x = this.random(-200,-101);
+        this.position.x = this.random(-200, -101);
         this.position.y = this.randomY();
     }
 
-    
+
 };
 
 // Draw the enemy on the screen, required method for game
@@ -26,7 +26,7 @@ GameObject.prototype.render = function () {
 
 GameObject.prototype.randomY = function () {
     var yPositions = [62, 145, 228];
-    var random = this.random(0,2);
+    var random = this.random(0, 2);
     return yPositions[random];
 }
 
@@ -36,7 +36,7 @@ GameObject.prototype.random = function (min, max) {
 }
 
 var Enemy = function () {
-    GameObject.call(this, 'images/enemy-bug.png', this.random(-100,0), this.randomY(), this.random(200,500));
+    GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0), this.randomY(), this.random(200, 350));
 };
 
 Enemy.prototype = Object.create(GameObject.prototype);
@@ -65,29 +65,34 @@ Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.handleInput = function (key) {
-  if (key == 'left' && !(this.position.x == 0)) {
-      this.position.x -= 101;
-  } else if (key == 'up' && !(this.position.y == -21)) {
-      this.position.y -= 83;
-  } else if (key == 'right' && !(this.position.x == 404)) {
-      this.position.x += 101;
-  } else if (key == 'down' && !(this.position.y == 394)) {
-    this.position.y += 83;
-  }
+    if (key == 'left' && !(this.position.x == 0)) {
+        this.position.x -= 101;
+    } else if (key == 'up' && !(this.position.y == -21)) {
+        this.position.y -= 83;
+    } else if (key == 'right' && !(this.position.x == 404)) {
+        this.position.x += 101;
+    } else if (key == 'down' && !(this.position.y == 394)) {
+        this.position.y += 83;
+    }
 }
 
-Player.prototype.checkCollisions = function() {
+Player.prototype.checkCollisions = function () {
+    var resetPlayerPosition = function () {
+        player.position.x = 202;
+        player.position.y = 394;
+    }
 
     allEnemies.forEach(function (enemy) {
-        if ((enemy.position.x > (player.position.x - 80) && enemy.position.x < (player.position.x + 80)) 
+        if ((enemy.position.x > (player.position.x - 80)
+            && enemy.position.x < (player.position.x + 80))
             && enemy.position.y == player.position.y) {
-            allert('yes');
+                resetPlayerPosition();
+                //score
+        } else if (player.position.y == -21) {
+            resetPlayerPosition();
+            //score
         }
     });
-
-    if (this.position.y == -21) {
-        allert('yes');
-    }
 }
 
 // Now instantiate your objects.
