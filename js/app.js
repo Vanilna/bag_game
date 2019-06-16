@@ -1,4 +1,5 @@
 var score = 0;
+var hearts = 0;
 
 // Enemies our player must avoid
 var GameObject = function (image, x, y, speed) {
@@ -17,8 +18,6 @@ GameObject.prototype.update = function (dt) {
         this.position.x = this.random(-200, -101);
         this.position.y = this.randomOfArray([62, 145, 228]);
     }
-
-
 };
 
 // Draw the enemy on the screen, required method for game
@@ -36,14 +35,30 @@ GameObject.prototype.random = function (min, max) {
     return random;
 }
 
+GameObject.prototype.checkCollisions = function (arr, callbackFunc, scoreSetCallback, scoreOrHartPoints, scoreCategory) {
+    var chekedItemPositionX = this.position.x;
+    var chekedItemPositionY = this.position.y;
+
+    arr.forEach(function (item) {
+        if ((item.position.x > (chekedItemPositionX - 80)
+            && item.position.x < (chekedItemPositionX + 80))
+            && item.position.y == chekedItemPositionY) {
+            callbackFunc();
+            if (scoreSetCallback) {
+                scoreSetCallback(scoreOrHartPoints, scoreCategory);
+            }
+        } 
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
 var Enemy = function () {
     GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0), this.randomOfArray([62, 145, 228]), this.random(200, 350));
 };
 
 Enemy.prototype = Object.create(GameObject.prototype);
 Enemy.prototype.constructor = Enemy;
-
-
 
 Enemy.prototype.allEnemiesMaker = function (n) {
     var enemy,
@@ -55,10 +70,8 @@ Enemy.prototype.allEnemiesMaker = function (n) {
     return enemyArray;
 };
 
+///////////////////////////////////////////////////////////////////////////////////
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 var Player = function () {
     GameObject.call(this, 'images/char-boy.png', 202, 394, 0);
 }
@@ -66,55 +79,71 @@ Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.handleInput = function (key) {
-    if (key == 'left' && !(this.position.x == 0)) {
+    if (key == 'left' && this.position.x != 0) {
         this.position.x -= 101;
-    } else if (key == 'up' && !(this.position.y == -21)) {
+    } else if (key == 'up' && this.position.y != -21) {
         this.position.y -= 83;
-    } else if (key == 'right' && !(this.position.x == 404)) {
+    } else if (key == 'right' && this.position.x != 404) {
         this.position.x += 101;
-    } else if (key == 'down' && !(this.position.y == 394)) {
+    } else if (key == 'down' && this.position.y != 394) {
         this.position.y += 83;
+    }
+    
+    if (key == 'up' && this.position.y == -21) {
+        this.setScore(5, 'score');
+        this.resetPosition();
     }
 }
 
-Player.prototype.checkCollisions = function () {
-    var resetPlayerPosition = function () {
+Player.prototype.resetPosition = function () {
         player.position.x = 202;
         player.position.y = 394;
     }
 
-    var setScore = function() {
+Player.prototype.setScore = function (points, category) {
+    if (category == 'score') {
+        score = score + points;
         document.querySelector('#score-count').innerHTML = score;
+    } else if (category == 'hearts') {
+        hearts = hearts + points;
+        document.querySelector('#heart-count').innerHTML = score;
     }
-
-    allEnemies.forEach(function (enemy) {
-        if ((enemy.position.x > (player.position.x - 80)
-            && enemy.position.x < (player.position.x + 80))
-            && enemy.position.y == player.position.y) {
-                resetPlayerPosition();
-                score -= 3;
-                setScore();
-        } else if (player.position.y == -21) {
-            resetPlayerPosition();
-            score += 5;
-            setScore();
-        }
-    });
+    
 }
 
-var Gem = function () {
-    GameObject.call(this, `images/gem_${this.randomOfArray(['blue', 'green', 'orange'])}.png`,
-                    this.randomOfArray([0, 101, 202, 303, 404]),  this.randomOfArray([62, 145, 228]), 0);
+///////////////////////////////////////////////////////////////////////////////////
+
+var Gem = function (color) {
+    GameObject.call(this, `images/gem_${color}.png`,
+        null, this.randomOfArray([62, 145, 228]), 0);
 }
 Gem.prototype = Object.create(GameObject.prototype);
 Gem.prototype.constructor = Gem;
 
+Gem.prototype.makeGems = function () {
+    var arr = ['blue', 'green', 'orange'],
+        gemArray = [],
+        gem;
+    arr.forEach(function (color) {
+        gem = new Gem(color);
+        gemArray.push(gem);
+    });
+    return gemArray;
+}
+
+Gem.prototype.colisionHendler = function () {
+    this.position.x = null;
+    
+    setTimeout(function () {
+        this.position.x = this.randomOfArray([0, 101, 202, 303, 404]);
+    }, 5000);
+}
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var player = new Player();
 var allEnemies = Enemy.prototype.allEnemiesMaker(3);
-var gem = new Gem();
+var allGems = Gem.prototype.makeGems();
 
 
 // This listens for key presses and sends the keys to your

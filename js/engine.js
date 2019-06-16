@@ -79,7 +79,11 @@ var Engine = (function (global) {
      */
     function update(dt) {
         updateEntities(dt);
-        player.checkCollisions();
+        player.checkCollisions(allEnemies, player.resetPosition, player.setScore, -3, 'score');
+        player.checkCollisions(allGems, Gem.colisionHandler, player.setScore, 1, 'hearts');
+       /* allGems.forEach(function (gem) {
+            gem.checkCollisions(allEnemies, gem.colisionHendler);
+        });*/
     }
 
     /* This is called by the update function and loops through all of the
@@ -90,10 +94,14 @@ var Engine = (function (global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function (enemy) {
-            enemy.update(dt);
+        allGems.forEach(function (gem) {
+            gem.update(0);
         });
+       /* allEnemies.forEach(function (enemy) {
+            enemy.update(dt);
+        });*/
         player.update(0);
+        
     }
 
     /* This function initially draws the "game level", it will then call
@@ -149,12 +157,14 @@ var Engine = (function (global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
-        allEnemies.forEach(function (enemy) {
-            enemy.render();
+        allGems.forEach(function (gem) {
+            gem.render();
         });
-
+        /*allEnemies.forEach(function (enemy) {
+            enemy.render();
+        });*/
         player.render();
-        gem.render();
+        
     }
 
     /* This function does nothing but it could have been a good place to
