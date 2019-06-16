@@ -15,7 +15,7 @@ GameObject.prototype.update = function (dt) {
         this.position.x += (this.speed * dt);
     } else {
         this.position.x = this.random(-200, -101);
-        this.position.y = this.randomY();
+        this.position.y = this.randomOfArray([62, 145, 228]);
     }
 
 
@@ -26,10 +26,9 @@ GameObject.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.position.x, this.position.y);
 };
 
-GameObject.prototype.randomY = function () {
-    var yPositions = [62, 145, 228];
-    var random = this.random(0, 2);
-    return yPositions[random];
+GameObject.prototype.randomOfArray = function (arr) {
+    var random = this.random(0, arr.length - 1);
+    return arr[random];
 }
 
 GameObject.prototype.random = function (min, max) {
@@ -38,7 +37,7 @@ GameObject.prototype.random = function (min, max) {
 }
 
 var Enemy = function () {
-    GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0), this.randomY(), this.random(200, 350));
+    GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0), this.randomOfArray([62, 145, 228]), this.random(200, 350));
 };
 
 Enemy.prototype = Object.create(GameObject.prototype);
@@ -46,7 +45,7 @@ Enemy.prototype.constructor = Enemy;
 
 
 
-var allEnemiesMaker = function (n) {
+Enemy.prototype.allEnemiesMaker = function (n) {
     var enemy,
         enemyArray = [];
     for (i = 0; i < n; i++) {
@@ -61,7 +60,7 @@ var allEnemiesMaker = function (n) {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function () {
-    GameObject.call(this, 'images/char-boy.png', 202, 394, 2);
+    GameObject.call(this, 'images/char-boy.png', 202, 394, 0);
 }
 Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
@@ -103,11 +102,19 @@ Player.prototype.checkCollisions = function () {
     });
 }
 
+var Gem = function () {
+    GameObject.call(this, `images/gem_${this.randomOfArray(['blue', 'green', 'orange'])}.png`,
+                    this.randomOfArray([0, 101, 202, 303, 404]),  this.randomOfArray([62, 145, 228]), 0);
+}
+Gem.prototype = Object.create(GameObject.prototype);
+Gem.prototype.constructor = Gem;
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var allEnemies = allEnemiesMaker(3);
 var player = new Player();
+var allEnemies = Enemy.prototype.allEnemiesMaker(3);
+var gem = new Gem();
 
 
 // This listens for key presses and sends the keys to your
