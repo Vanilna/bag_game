@@ -1,3 +1,30 @@
 body {
     text-align: center;
 }
+
+.score {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 505px;
+    height: 83px;
+    margin: 0 auto;
+    justify-items: flex-start;
+}
+
+.score img {
+    height: 83px;
+    width: auto;
+}
+
+.score p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    font-size: 36px;
+    margin: 0;
+    padding-left: 15px;
+}
+
+.stars, .hearts {
+    display: flex;
+    align-items: center;
+}

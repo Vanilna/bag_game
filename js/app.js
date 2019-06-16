@@ -1,3 +1,5 @@
+var score = 0;
+
 // Enemies our player must avoid
 var GameObject = function (image, x, y, speed) {
     this.sprite = image;
@@ -82,15 +84,21 @@ Player.prototype.checkCollisions = function () {
         player.position.y = 394;
     }
 
+    var setScore = function() {
+        document.querySelector('#score-count').innerHTML = score;
+    }
+
     allEnemies.forEach(function (enemy) {
         if ((enemy.position.x > (player.position.x - 80)
             && enemy.position.x < (player.position.x + 80))
             && enemy.position.y == player.position.y) {
                 resetPlayerPosition();
-                //score
+                score -= 3;
+                setScore();
         } else if (player.position.y == -21) {
             resetPlayerPosition();
-            //score
+            score += 5;
+            setScore();
         }
     });
 }
