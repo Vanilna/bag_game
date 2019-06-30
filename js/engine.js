@@ -79,13 +79,13 @@ var Engine = (function (global) {
      */
     function update(dt) {
         updateEntities(dt);
-        player.checkCollisions(allEnemies, player.resetPosition, player.setScore, -3, 'score');
-        player.checkCollisions(allGems, Gem.colisionHandler, player.setScore, 1, 'hearts');
-       /* allGems.forEach(function (gem) {
-            gem.checkCollisions(allEnemies, gem.colisionHendler);
-        });*/
+        player.checkCollisions(allEnemies);
+        player.checkCollisions(allGems);
+       allGems.forEach(function (gem) {
+            gem.checkCollisions(allEnemies);
+        });
     }
-
+ 
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -97,9 +97,9 @@ var Engine = (function (global) {
         allGems.forEach(function (gem) {
             gem.update(0);
         });
-       /* allEnemies.forEach(function (enemy) {
+        allEnemies.forEach(function (enemy) {
             enemy.update(dt);
-        });*/
+        });
         player.update(0);
         
     }
@@ -160,9 +160,9 @@ var Engine = (function (global) {
         allGems.forEach(function (gem) {
             gem.render();
         });
-        /*allEnemies.forEach(function (enemy) {
+        allEnemies.forEach(function (enemy) {
             enemy.render();
-        });*/
+        });
         player.render();
         
     }

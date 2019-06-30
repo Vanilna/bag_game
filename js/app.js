@@ -1,17 +1,14 @@
 var score = 0;
 var hearts = 0;
 
-// Enemies our player must avoid
-var GameObject = function (image, x, y, speed) {
+var GameObject = function (image, x, y, speed, type) {
     this.sprite = image;
     this.position = { x: parseInt(x, 10), y: parseInt(y, 10) };
     this.speed = speed;
+    this.type = type;
 }
 
 GameObject.prototype.update = function (dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
     if (this.position.x <= 505) {
         this.position.x += (this.speed * dt);
     } else {
@@ -20,7 +17,6 @@ GameObject.prototype.update = function (dt) {
     }
 };
 
-// Draw the enemy on the screen, required method for game
 GameObject.prototype.render = function () {
     ctx.drawImage(Resources.get(this.sprite), this.position.x, this.position.y);
 };
@@ -35,26 +31,28 @@ GameObject.prototype.random = function (min, max) {
     return random;
 }
 
-GameObject.prototype.checkCollisions = function (arr, callbackFunc, scoreSetCallback, scoreOrHartPoints, scoreCategory) {
-    var chekedItemPositionX = this.position.x;
-    var chekedItemPositionY = this.position.y;
-
+GameObject.prototype.checkCollisions = function (arr) {
+    var checkedItem = this;
     arr.forEach(function (item) {
-        if ((item.position.x > (chekedItemPositionX - 80)
-            && item.position.x < (chekedItemPositionX + 80))
-            && item.position.y == chekedItemPositionY) {
-            callbackFunc();
-            if (scoreSetCallback) {
-                scoreSetCallback(scoreOrHartPoints, scoreCategory);
+        if ((item.position.x > (checkedItem.position.x - 80)
+            && item.position.x < (checkedItem.position.x + 80))
+            && item.position.y == checkedItem.position.y) {
+            if (item.type == 'enemy') {
+                checkedItem.reactOnColision(item.type, -3);
+            } else if (item.type == 'gem') {
+                item.reactOnColision();
+                checkedItem.reactOnColision(item.type, 1);
             }
-        } 
+        }
     });
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 
 var Enemy = function () {
-    GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0), this.randomOfArray([62, 145, 228]), this.random(200, 350));
+    GameObject.call(this, 'images/enemy-bug.png', this.random(-100, 0),
+        this.randomOfArray([62, 145, 228]), this.random(200, 350), 'enemy');
 };
 
 Enemy.prototype = Object.create(GameObject.prototype);
@@ -73,7 +71,7 @@ Enemy.prototype.allEnemiesMaker = function (n) {
 ///////////////////////////////////////////////////////////////////////////////////
 
 var Player = function () {
-    GameObject.call(this, 'images/char-boy.png', 202, 394, 0);
+    GameObject.call(this, 'images/char-boy.png', 202, 394, 0, 'player');
 }
 Player.prototype = Object.create(GameObject.prototype);
 Player.prototype.constructor = Player;
@@ -88,34 +86,34 @@ Player.prototype.handleInput = function (key) {
     } else if (key == 'down' && this.position.y != 394) {
         this.position.y += 83;
     }
-    
     if (key == 'up' && this.position.y == -21) {
-        this.setScore(5, 'score');
-        this.resetPosition();
+        this.reactOnColision('water', 5);
     }
 }
 
-Player.prototype.resetPosition = function () {
-        player.position.x = 202;
-        player.position.y = 394;
+Player.prototype.reactOnColision = function (target, points) {
+    this.setScore(target, points);
+    if (target !== 'gem') {
+        this.position.x = 202;
+        this.position.y = 394;
     }
+}
 
-Player.prototype.setScore = function (points, category) {
-    if (category == 'score') {
+Player.prototype.setScore = function (target, points) {
+    if (target == 'water' || target == 'enemy') {
         score = score + points;
         document.querySelector('#score-count').innerHTML = score;
-    } else if (category == 'hearts') {
+    } else if (target = 'gems') {
         hearts = hearts + points;
-        document.querySelector('#heart-count').innerHTML = score;
+        document.querySelector('#heart-count').innerHTML = hearts;
     }
-    
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
 
 var Gem = function (color) {
     GameObject.call(this, `images/gem_${color}.png`,
-        null, this.randomOfArray([62, 145, 228]), 0);
+        this.randomOfArray([0, 101, 202, 303, 404]), this.randomOfArray([62, 145, 228]), 0, 'gem');
 }
 Gem.prototype = Object.create(GameObject.prototype);
 Gem.prototype.constructor = Gem;
@@ -131,13 +129,18 @@ Gem.prototype.makeGems = function () {
     return gemArray;
 }
 
-Gem.prototype.colisionHendler = function () {
-    this.position.x = null;
-    
+Gem.prototype.reactOnColision = function () {
+    var gem = this;
+    this.position.x = -200;
+
     setTimeout(function () {
-        this.position.x = this.randomOfArray([0, 101, 202, 303, 404]);
+        gem.position.x = gem.randomOfArray([0, 101, 202, 303, 404]);
+        gem.position.y = gem.randomOfArray([62, 145, 228]);
     }, 5000);
 }
+
+/////////////////////////////////////////////////////////////////////////////////
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -155,6 +158,5 @@ document.addEventListener('keyup', function (e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
