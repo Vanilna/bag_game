@@ -1,11 +1,12 @@
 var score = 0;
 var hearts = 0;
 
-var GameObject = function (image, x, y, speed, type) {
+var GameObject = function (image, x, y, speed, type, inProgress) {
     this.sprite = image;
     this.position = { x: parseInt(x, 10), y: parseInt(y, 10) };
     this.speed = speed;
     this.type = type;
+    this.inProgress = inProgress;
 }
 
 GameObject.prototype.update = function (dt) {
@@ -33,9 +34,10 @@ GameObject.prototype.random = function (min, max) {
 
 GameObject.prototype.checkCollisions = function (arr) {
     var checkedItem = this;
+
     arr.forEach(function (item) {
-        if ((item.position.x > (checkedItem.position.x - 80)
-            && item.position.x < (checkedItem.position.x + 80))
+        if ((item.position.x > (checkedItem.position.x - 40)
+            && item.position.x < (checkedItem.position.x + 40))
             && item.position.y == checkedItem.position.y) {
             if (item.type == 'enemy') {
                 checkedItem.reactOnColision(item.type, -3);
@@ -113,7 +115,7 @@ Player.prototype.setScore = function (target, points) {
 
 var Gem = function (color) {
     GameObject.call(this, `images/gem_${color}.png`,
-        this.randomOfArray([0, 101, 202, 303, 404]), this.randomOfArray([62, 145, 228]), 0, 'gem');
+        this.randomOfArray([0, 101, 202, 303, 404]), this.randomOfArray([62, 145, 228]), 0, 'gem', false);
 }
 Gem.prototype = Object.create(GameObject.prototype);
 Gem.prototype.constructor = Gem;
@@ -131,12 +133,15 @@ Gem.prototype.makeGems = function () {
 
 Gem.prototype.reactOnColision = function () {
     var gem = this;
-    this.position.x = -200;
+    this.position.x = undefined;
 
-    setTimeout(function () {
-        gem.position.x = gem.randomOfArray([0, 101, 202, 303, 404]);
-        gem.position.y = gem.randomOfArray([62, 145, 228]);
-    }, 5000);
+    if (!gem.inProgress) {
+        setTimeout(function () {
+            gem.inProgress = true;
+            gem.position.x = gem.randomOfArray([0, 101, 202, 303, 404]);
+            gem.position.y = gem.randomOfArray([62, 145, 228]);
+        }, 5000);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////
